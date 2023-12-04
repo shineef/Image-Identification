@@ -125,7 +125,7 @@ def classify_knn(o_points, x_points, star, k=3):
     neighbors = labels[np.argsort(distances, axis=0)[:k]]
 
     # The class of the star is the most common class among the neighbors
-    return 'o' if np.count_nonzero(neighbors == 'o') > np.count_nonzero(neighbors == 'x') else 'x'
+    return 'o' if np.count_nonzero(neighbors == 'o') > np.count_nonzero(neighbors == 'x') else 'x', k
 
 def classify_rocchio(o_points, x_points, star):
     # Calculate the centroids of the 'o' and 'x' points
@@ -148,17 +148,20 @@ o_points, x_points = extract_points(image_path, o_template_path, x_template_path
 
 # o_points, x_points, star = extract_points(image_path, o_template_path, x_template_path, star_template_path)
 
+classification_result, k = classify_knn(o_points, x_points, star)
+
+print(f'The location of the o points is at: {o_points}')
+print(f'The location of the x points is at: {x_points}')
+print(f'The location of the star is at: {star}')
+print(f'k-NN classification(when k = {k}): {classification_result}')
+print(f'Rocchio classification: {classify_rocchio(o_points, x_points, star)}')
+
 # Plot the points
 plt.figure(figsize=(8, 8))
 plt.scatter(o_points[:, 0], -o_points[:, 1], color='blue', label='o')
 plt.scatter(x_points[:, 0], -x_points[:, 1], color='red', label='x')
 plt.scatter(star[0], -star[1], color='green', label='star')
-plt.legend()
+plt.legend(bbox_to_anchor=(1.05, 1))
 plt.gca().set_aspect('equal', adjustable='box')
+plt.savefig('output.png')
 plt.show()
-
-print(f'The location of the o points is at: {o_points}')
-print(f'The location of the x points is at: {x_points}')
-print(f'The location of the star is at: {star}')
-print(f'k-NN classification: {classify_knn(o_points, x_points, star)}')
-print(f'Rocchio classification: {classify_rocchio(o_points, x_points, star)}')
